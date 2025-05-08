@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Companies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            padding-bottom: 2rem;
+            font-size: 2.2rem;
+            color: #1a3c64;
+            font-weight: 600;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: #1a3c64;
+            border-radius: 2px;
+        }
+
+        /* Card Container */
+        .company-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Company Card */
+        .company-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 25px;
+            position: relative;
+            border-top: 5px solid #1a3c64;
+        }
+
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .company-card:nth-child(2) {
+            border-top-color: #ff6b35;
+        }
+
+        .company-card:nth-child(3) {
+            border-top-color: #48c774;
+        }
+
+        .company-card:nth-child(4) {
+            border-top-color: #1a3c64;
+        }
+
+        .company-card:nth-child(5) {
+            border-top-color: #ffc107;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a3c64;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .company-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat:not(:last-child) {
+            border-right: 1px solid rgba(26,60,100,0.2);
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a3c64;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .company-details {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .location i {
+            color: #1a3c64;
+            margin-right: 8px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-details-btn, .book-now-btn {
+            flex: 1;
+            padding: 12px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: none;
+            text-decoration: none;
+        }
+
+        .view-details-btn {
+            background: #1a3c64;
+            color: white;
+        }
+
+        .view-details-btn:hover {
+            background: #123052;
+        }
+
+        .book-now-btn {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .book-now-btn:hover {
+            background: #e55a2b;
+        }
+
+        /* Details Overlay */
+        .details-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .details-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .details-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .details-overlay.active .details-content {
+            transform: scale(1);
+        }
+
+        .close-details {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s ease;
+        }
+
+        .close-details:hover {
+            color: #e55a2b;
+        }
+
+        .detail-company-name {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a3c64;
+            margin-bottom: 5px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(26,60,100,0.2);
+            text-align: center;
+        }
+
+        .detail-company-subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a3c64;
+            margin-bottom: 15px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .detail-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #1a3c64;
+        }
+
+        .detail-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .detail-stat {
+            flex: 1;
+            min-width: 120px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .detail-stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a3c64;
+        }
+
+        .detail-stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .detail-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .detail-team-member {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .member-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #1a3c64;
+            margin-bottom: 3px;
+        }
+
+        .member-position {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .detail-projects {
+            margin-top: 15px;
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .project-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-name {
+            font-weight: 600;
+            color: #1a3c64;
+            margin-bottom: 5px;
+        }
+
+        .project-description {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .detail-book-now {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .detail-book-now:hover {
+            background: #e55a2b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .company-container {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+
+            .detail-stats {
+                flex-direction: column;
+            }
+
+            .detail-stat {
+                margin-bottom: 10px;
+            }
+
+            .project-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .project-image {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('navbar_customer') %>
+    <!-- Page Title -->
+    <h1 class="page-title">Top Construction Companies</h1>
+
+    <!-- Company Cards -->
+    <div class="company-container">
+        <!-- Company 1 -->
+        <div class="company-card" data-id="larsen">
+            <div class="company-name">Larsen & Toubro</div>
+            
+            <div class="company-stats">
+                <div class="stat">
+                    <span class="stat-number">350+</span>
+                    <span class="stat-label">Projects</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">85</span>
+                    <span class="stat-label">Years</span>
+                </div>
+            </div>
+            
+            <div class="company-details">
+                Leading construction company with expertise in residential and commercial buildings, infrastructure development, and engineering services.
+            </div>
+            
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i> Hyderabad, India
+            </div>
+            
+            <div class="buttons">
+                <button class="view-details-btn" onclick="showDetails(this.getAttribute('data-id'))" data-id="larsen">View Details</button>
+                <a href="/constructionform.html" class="book-now-btn">Book Now</a>
+            </div>
+        </div>
+
+        <!-- Company 2 -->
+        <div class="company-card" data-id="meil">
+            <div class="company-name">MEIL</div>
+            
+            <div class="company-stats">
+                <div class="stat">
+                    <span class="stat-number">250+</span>
+                    <span class="stat-label">Projects</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">32</span>
+                    <span class="stat-label">Years</span>
+                </div>
+            </div>
+            
+            <div class="company-details">
+                Specializing in infrastructure development, industrial construction, and large-scale civil engineering projects across India.
+            </div>
+            
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i> Mumbai, India
+            </div>
+            
+            <div class="buttons">
+                <button class="view-details-btn" onclick="showDetails(this.getAttribute('data-id'))" data-id="meil">View Details</button>
+                <a href="/constructionform.html" class="book-now-btn">Book Now</a>
+            </div>
+        </div>
+
+        <!-- Company 3 -->
+        <div class="company-card" data-id="abc">
+            <div class="company-name">ABC Constructions</div>
+            
+            <div class="company-stats">
+                <div class="stat">
+                    <span class="stat-number">120+</span>
+                    <span class="stat-label">Projects</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">15</span>
+                    <span class="stat-label">Years</span>
+                </div>
+            </div>
+            
+            <div class="company-details">
+                Residential and commercial construction company known for quality craftsmanship and modern design approach in urban developments.
+            </div>
+            
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i> Hyderabad, India
+            </div>
+            
+            <div class="buttons">
+                <button class="view-details-btn" onclick="showDetails(this.getAttribute('data-id'))" data-id="abc">View Details</button>
+                <a href="/constructionform.html" class="book-now-btn">Book Now</a>
+            </div>
+        </div>
+
+        <!-- Company 4 -->
+        <div class="company-card" data-id="xyz">
+            <div class="company-name">XYZ Constructions</div>
+            
+            <div class="company-stats">
+                <div class="stat">
+                    <span class="stat-number">180+</span>
+                    <span class="stat-label">Projects</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">22</span>
+                    <span class="stat-label">Years</span>
+                </div>
+            </div>
+            
+            <div class="company-details">
+                Infrastructure and renovation specialists with expertise in industrial buildings, bridges, and transportation facilities.
+            </div>
+            
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i> Mumbai, India
+            </div>
+            
+            <div class="buttons">
+                <button class="view-details-btn" onclick="showDetails(this.getAttribute('data-id'))" data-id="xyz">View Details</button>
+                <a href="/constructionform.html" class="book-now-btn">Book Now</a>
+            </div>
+        </div>
+
+        <!-- Company 5 -->
+        <div class="company-card" data-id="123">
+            <div class="company-name">123 Constructions</div>
+            
+            <div class="company-stats">
+                <div class="stat">
+                    <span class="stat-number">95+</span>
+                    <span class="stat-label">Projects</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">10</span>
+                    <span class="stat-label">Years</span>
+                </div>
+            </div>
+            
+            <div class="company-details">
+                Renovation and commercial building specialists with focus on sustainable and eco-friendly construction practices.
+            </div>
+            
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i> Delhi NCR, India
+            </div>
+            
+            <div class="buttons">
+                <button class="view-details-btn" onclick="showDetails(this.getAttribute('data-id'))" data-id="123">View Details</button>
+                <a href="/constructionform.html" class="book-now-btn">Book Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Details Modal for L&T -->
+    <div class="details-overlay" id="larsen-details">
+        <div class="details-content">
+            <button class="close-details" onclick="closeDetails('larsen')"><i class="fas fa-times"></i></button>
+            
+            <h2 class="detail-company-name">Larsen & Toubro</h2>
+            <p class="detail-company-subtitle">Leading Engineering & Construction Conglomerate</p>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Company Overview</h3>
+                <div class="detail-stats">
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">350+</div>
+                        <div class="detail-stat-label">Projects Completed</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">85</div>
+                        <div class="detail-stat-label">Years in Business</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">15K+</div>
+                        <div class="detail-stat-label">Employees</div>
+                    </div>
+                </div>
+                
+                <p class="detail-description">
+                    Larsen & Toubro Limited (L&T) is a major Indian multinational conglomerate with operations in more than 30 countries. 
+                    The company was founded in 1938 in Mumbai. L&T is engaged in technology, engineering, construction, manufacturing, 
+                    and financial services with over $21 billion in revenue. With expertise spanning decades, L&T has constructed some of 
+                    the most iconic structures in India and abroad, including airports, metros, highways, bridges, and high-rise buildings.
+                </p>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Key Team Members</h3>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Rajesh Kumar" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Rajesh Kumar</h4>
+                        <p class="member-position">CEO & Founder</p>
+                    </div>
+                </div>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Priya Sharma" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Priya Sharma</h4>
+                        <p class="member-position">Head of Projects</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Completed Projects</h3>
+                <div class="detail-projects">
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Downtown Office Complex" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Downtown Office Complex</h4>
+                            <p class="project-description">A 25-story commercial tower with retail spaces and premium office accommodations in the heart of the city.</p>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Tech Park Campus" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Tech Park Campus</h4>
+                            <p class="project-description">A 10-acre integrated technology park with office spaces, research facilities, and recreational areas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Did You Know?</h3>
+                <p class="detail-description">
+                    Our company was the first in the region to implement sustainable construction practices across all projects, 
+                    reducing environmental impact by 40% compared to industry standards.
+                </p>
+            </div>
+            
+            <a href="/constructionform.html" class="detail-book-now">Book Now</a>
+        </div>
+    </div>
+
+    <!-- Company Details Modal for MEIL -->
+    <div class="details-overlay" id="meil-details">
+        <div class="details-content">
+            <button class="close-details" onclick="closeDetails('meil')"><i class="fas fa-times"></i></button>
+            
+            <h2 class="detail-company-name">MEIL</h2>
+            <p class="detail-company-subtitle">Megha Engineering & Infrastructure Limited</p>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Company Overview</h3>
+                <div class="detail-stats">
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">250+</div>
+                        <div class="detail-stat-label">Projects Completed</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">32</div>
+                        <div class="detail-stat-label">Years in Business</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">8K+</div>
+                        <div class="detail-stat-label">Employees</div>
+                    </div>
+                </div>
+                
+                <p class="detail-description">
+                    Megha Engineering & Infrastructure Limited (MEIL) is a major infrastructure company with expertise in irrigation, 
+                    power generation, oil & gas, and transportation sectors. Established in 1989, MEIL has grown to become one of India's 
+                    leading construction companies with operations across multiple states and international presence.
+                </p>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Key Team Members</h3>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Sudhir Reddy</h4>
+                        <p class="member-position">Managing Director</p>
+                    </div>
+                </div>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Anand Kumar</h4>
+                        <p class="member-position">Chief Technical Officer</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Completed Projects</h3>
+                <div class="detail-projects">
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Kaleshwaram Lift Irrigation Project" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Kaleshwaram Lift Irrigation Project</h4>
+                            <p class="project-description">One of the world's largest multi-stage lift irrigation projects with massive pumping stations.</p>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Mumbai Metro Line" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Mumbai Metro Line</h4>
+                            <p class="project-description">Construction of elevated metro rail line with stations and infrastructure facilities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/constructionform.html" class="detail-book-now">Book Now</a>
+        </div>
+    </div>
+
+    <!-- ABC Constructions Details Modal -->
+    <div class="details-overlay" id="abc-details">
+        <div class="details-content">
+            <button class="close-details" onclick="closeDetails('abc')"><i class="fas fa-times"></i></button>
+            
+            <h2 class="detail-company-name">ABC Constructions</h2>
+            <p class="detail-company-subtitle">Modern Residential & Commercial Specialists</p>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Company Overview</h3>
+                <div class="detail-stats">
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">120+</div>
+                        <div class="detail-stat-label">Projects Completed</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">15</div>
+                        <div class="detail-stat-label">Years in Business</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">500+</div>
+                        <div class="detail-stat-label">Employees</div>
+                    </div>
+                </div>
+                
+                <p class="detail-description">
+                    ABC Constructions is a modern construction firm specializing in residential and commercial projects. 
+                    Established in 2008, the company has quickly gained a reputation for innovative design approaches and 
+                    quality craftsmanship. Their projects are known for contemporary aesthetics, efficient space utilization, 
+                    and adherence to sustainable building practices.
+                </p>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Key Team Members</h3>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Vikram Mehta</h4>
+                        <p class="member-position">Founder & CEO</p>
+                    </div>
+                </div>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Aisha Khan</h4>
+                        <p class="member-position">Chief Architect</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Completed Projects</h3>
+                <div class="detail-projects">
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Harmony Heights" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Harmony Heights</h4>
+                            <p class="project-description">A luxury residential complex with 150 apartments, featuring modern amenities and smart home technologies.</p>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Green Plaza" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Green Plaza</h4>
+                            <p class="project-description">An eco-friendly commercial complex with LEED certification, utilizing renewable energy sources.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/constructionform.html" class="detail-book-now">Book Now</a>
+        </div>
+    </div>
+
+    <!-- XYZ Constructions Details Modal -->
+    <div class="details-overlay" id="xyz-details">
+        <div class="details-content">
+            <button class="close-details" onclick="closeDetails('xyz')"><i class="fas fa-times"></i></button>
+            
+            <h2 class="detail-company-name">XYZ Constructions</h2>
+            <p class="detail-company-subtitle">Infrastructure & Industrial Construction Experts</p>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Company Overview</h3>
+                <div class="detail-stats">
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">180+</div>
+                        <div class="detail-stat-label">Projects Completed</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">22</div>
+                        <div class="detail-stat-label">Years in Business</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">1.2K+</div>
+                        <div class="detail-stat-label">Employees</div>
+                    </div>
+                </div>
+                
+                <p class="detail-description">
+                    XYZ Constructions is a leading infrastructure development company established in 2002. The company 
+                    specializes in large-scale industrial projects, bridges, highways, and transportation facilities. 
+                    With a strong engineering team and state-of-the-art equipment, XYZ Constructions has successfully 
+                    delivered complex projects across multiple states in India.
+                </p>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Key Team Members</h3>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Rahul Desai</h4>
+                        <p class="member-position">Managing Director</p>
+                    </div>
+                </div>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Neha Joshi</h4>
+                        <p class="member-position">Chief Project Engineer</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Completed Projects</h3>
+                <div class="detail-projects">
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Coastal Highway Link" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Coastal Highway Link</h4>
+                            <p class="project-description">A 45-kilometer coastal highway with bridges and underpasses connecting major port cities.</p>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Industrial Manufacturing Hub" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Industrial Manufacturing Hub</h4>
+                            <p class="project-description">Development of a 200-acre industrial zone with factories, warehouses, and logistics facilities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/constructionform.html" class="detail-book-now">Book Now</a>
+        </div>
+    </div>
+    
+    <!-- 123 Constructions Details Modal -->
+    <div class="details-overlay" id="123-details">
+        <div class="details-content">
+            <button class="close-details" onclick="closeDetails('123')"><i class="fas fa-times"></i></button>
+            
+            <h2 class="detail-company-name">123 Constructions</h2>
+            <p class="detail-company-subtitle">Renovation & Sustainable Building Specialists</p>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Company Overview</h3>
+                <div class="detail-stats">
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">95+</div>
+                        <div class="detail-stat-label">Projects Completed</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">10</div>
+                        <div class="detail-stat-label">Years in Business</div>
+                    </div>
+                    <div class="detail-stat">
+                        <div class="detail-stat-number">250+</div>
+                        <div class="detail-stat-label">Employees</div>
+                    </div>
+                </div>
+                
+                <p class="detail-description">
+                    123 Constructions is a relatively young company that has made a significant impact in the renovation 
+                    and sustainable building sector. Founded in 2014, the company focuses on eco-friendly construction 
+                    methods, energy-efficient designs, and revitalization of existing commercial spaces. They are 
+                    pioneers in using recycled materials and implementing green building standards.
+                </p>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Key Team Members</h3>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Arjun Malhotra</h4>
+                        <p class="member-position">Founder & Director</p>
+                    </div>
+                </div>
+                <div class="detail-team-member">
+                    <img src="/api/placeholder/120/120" alt="Team Member" class="member-image">
+                    <div class="member-info">
+                        <h4 class="member-name">Divya Sharma</h4>
+                        <p class="member-position">Sustainability Head</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h3 class="detail-section-title">Completed Projects</h3>
+                <div class="detail-projects">
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Heritage Mall Revitalization" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Heritage Mall Revitalization</h4>
+                            <p class="project-description">Renovation of a historical building into a modern shopping complex while preserving architectural elements.</p>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <img src="/api/placeholder/120/120" alt="Green Office Park" class="project-image">
+                        <div class="project-info">
+                            <h4 class="project-name">Green Office Park</h4>
+                            <p class="project-description">A commercial complex featuring solar power generation, rainwater harvesting, and natural ventilation systems.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/constructionform.html" class="detail-book-now">Book Now</a>
+        </div>
+    </div>
+
+    <script>
+        function showDetails(companyId) {
+            const overlay = document.getElementById(companyId + '-details');
+            if (!overlay) {
+                console.error(`Overlay with ID ${companyId}-details not found.`);
+                return;
+            }
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeDetails(companyId) {
+            const overlay = document.getElementById(companyId + '-details');
+            if (!overlay) {
+                console.error(`Overlay with ID ${companyId}-details not found.`);
+                return;
+            }
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close the modal when clicking outside the content area
+        document.addEventListener('DOMContentLoaded', function() {
+            const overlays = document.querySelectorAll('.details-overlay');
+            
+            overlays.forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            });
+            
+            // Close when ESC key is pressed
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const activeOverlay = document.querySelector('.details-overlay.active');
+                    if (activeOverlay) {
+                        activeOverlay.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
